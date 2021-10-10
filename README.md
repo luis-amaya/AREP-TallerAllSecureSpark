@@ -19,7 +19,6 @@ Para un optimo funcionamiento del proyecto en un ambiente de desarrollo se debe 
 - [Maven](https://maven.apache.org/) : Gestor de dependencias.
 - [Spark](https://sparkjava.com/download) : Micro-framework para desarrollo web.
 - [Git](https://git-scm.com/) : Software para control de versiones.
-- [Docker](https://www.docker.com) : Contanier Manager.
 - [AWS](https://aws.amazon.com) : Servicio de despliegue.
 ### Instalación 🔧
 
