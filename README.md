@@ -51,7 +51,7 @@ Proyecto construido con:
 
 ## Licencia 📄
 
-Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE](LICENSE.md) para detalles
+Este proyecto está bajo la Licencia (Tu Licencia) - mira el archivo [LICENSE](License.md) para detalles
 
 
 Plantilla de README por: [Villanuevand](https://github.com/Villanuevand) 
