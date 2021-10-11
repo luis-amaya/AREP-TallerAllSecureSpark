@@ -16,9 +16,19 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
+import org.json.JSONObject;
+
+import spark.Request;
+import spark.Response;
+
 public class URLReader {
 
-    public static void main(String[] args) {
+    public static URLReader startURLOperation() {
+        startSSLOperation();
+        return new URLReader();
+    }
+
+    private static void startSSLOperation() {
         try {
 
             // Create a file and a password representation
@@ -46,13 +56,6 @@ public class URLReader {
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(null, tmf.getTrustManagers(), null);
             SSLContext.setDefault(sslContext);
-
-            // We can now read this URL
-            readURL("https://localhost:4567/hellow");
-
-            // This one can't be read because the Java default truststore has been
-            // changed.
-            readURL("https://www.google.com");
 
         } catch (KeyStoreException ex) {
             Logger.getLogger(URLReader.class.getName()).log(Level.SEVERE, null, ex);
@@ -106,5 +109,64 @@ public class URLReader {
         } catch (IOException x) {
             System.err.println(x);
         }
+    }
+
+    public JSONObject redirectToPage(Response res, String url) {
+        try {
+            return readURLAuthorized(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.redirect("404");
+            return null;
+        }
+    }
+
+    public static JSONObject readURLAuthorized(String sitetoread) throws IOException {
+        // Crea el objeto que representa una URL2
+        URL siteURL = new URL(sitetoread);
+        // Crea el objeto que URLConnection
+        URLConnection urlConnection = siteURL.openConnection();
+        // Obtiene los campos del encabezado y los almacena en un estructura Map
+        Map<String, List<String>> headers = urlConnection.getHeaderFields();
+        // Obtiene una vista del mapa como conjunto de pares <K,V>
+        // para poder navegarlo
+        Set<Map.Entry<String, List<String>>> entrySet = headers.entrySet();
+        // Recorre la lista de campos e imprime los valores
+        for (Map.Entry<String, List<String>> entry : entrySet) {
+            String headerName = entry.getKey();
+
+            // Si el nombre es nulo, significa que es la linea de estado
+            if (headerName != null) {
+                // System.out.print(headerName + ":");
+            }
+            List<String> headerValues = entry.getValue();
+            for (String value : headerValues) {
+                // System.out.print(value);
+            }
+            // System.out.println("");
+        }
+
+        // System.out.println("-------message-body------");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+        String inputLine = null;
+        String contentReturned = "";
+        StringBuffer response = new StringBuffer();
+        while ((inputLine = reader.readLine()) != null) {
+            contentReturned = contentReturned + inputLine + "\n";
+            response.append(inputLine);
+            // System.out.println(inputLine);
+        }
+        JSONObject json = new JSONObject(response.toString());
+        System.out.println(contentReturned);
+        return json;
+    }
+
+    private static String default404HTMLResponse() {
+        String outputLine = "HTTP/1.1 404 Not found\r\n" + "Content-Type: text/html\r\n" + "\r\n" + "<!DOCTYPE html>"
+                + "<html>" + " <head>" + "     <title>404 Not Found </title>" + "     <meta charset=\"UTF-8\""
+                + "     <meta name=\"viewport\"" + " </head>" + "<body>" + "     <div><h1>Error 404</h1></div>"
+                + " </body>" + "</html>";
+        return outputLine;
     }
 }
